@@ -1,0 +1,173 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="">UrnaEletronica</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <button type="button" class="btn" (click)="changePage('Urna')">Urna</button>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="btn" (click)="changePage('Candidatos')">Candidatos</button>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="btn" (click)="changePage('Votos')">Votos</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="row" *ngIf="page == 'Urna'">
+    <div class="col-md-6">
+      <div class="row" style="display: flex; justify-content: flex-end; align-items: center;">
+        <div class="col-md-6" style="border: 3px solid black; border-radius: 5px; min-height: 185px;">
+        <div class="row">
+          <div class="col-md-12" *ngIf="!votouSucesso">
+            <span>Digite o número do seu candidato</span>
+          </div>
+        </div>
+          <div class="row" *ngIf="!votouSucesso">
+            <div class="col-md-6" style="display: flex; justify-content: flex-end;">
+              <input type="text" style="width: 25px;" disabled [value]="decimal">
+            </div>
+            <div class="col-md-6">
+              <input type="text" style="width: 25px;" disabled [value]="unit">
+            </div>
+          </div>
+          <div *ngIf="votouSucesso">
+            <span style="display: flex; justify-content: center;" *ngIf="!branco">Você votou com sucesso!</span>
+            <span style="display: flex; justify-content: center;" *ngIf="branco">Você votou em branco com sucesso!</span>
+            <div class="row" style="display: flex; justify-content: center;">
+              <button type="button" class="btn btn-primary" (click)="votarNovamente()">Votar Novamente</button>
+            </div>
+          </div>
+          <div *ngIf="candidateNotExist">
+            <span style="display: flex; justify-content: center;">O candidato não existe!</span>
+          </div>
+          <div *ngIf="candidate && !votouSucesso">
+            <div class="row">
+              <div class="col-md-12" style="display: flex;">
+                Numero: {{ candidate.subtitle }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12" style="display: flex;">
+                Candidato: {{ candidate.name }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12" style="display: flex;">
+                Vice: {{ candidate.viceName }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="row">
+        <div class="col-md-6" style="display: flex; justify-content: center;">
+          <button type="button" class="btn btn-dark" (click)="vote('1')">1</button>
+          <button type="button" class="btn btn-dark" (click)="vote('2')">2</button>
+          <button type="button" class="btn btn-dark" (click)="vote('3')">3</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6" style="display: flex; justify-content: center;">
+          <button type="button" class="btn btn-dark" (click)="vote('4')">4</button>
+          <button type="button" class="btn btn-dark" (click)="vote('5')">5</button>
+          <button type="button" class="btn btn-dark" (click)="vote('6')">6</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6" style="display: flex; justify-content: center;">
+          <button type="button" class="btn btn-dark" (click)="vote('7')">7</button>
+          <button type="button" class="btn btn-dark" (click)="vote('8')">8</button>
+          <button type="button" class="btn btn-dark" (click)="vote('9')">9</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6" style="display: flex; justify-content: center;">
+          <button type="button" class="btn btn-dark" (click)="vote('0')">0</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6" style="display: flex; justify-content: center;">
+          <button type="button" class="btn btn-light" (click)="voteBranco()">Branco</button>
+          <button type="button" class="btn btn-warning" (click)="corrige()">Corrige</button>
+          <button type="button" class="btn btn-success" (click)="confirma()">Confirma</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="page == 'Votos'">
+    <div class="col-md-12">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Legenda</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Vice</th>
+            <th scope="col">Votos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let vote of votos">
+            <th>{{ vote.subtitle }}</th>
+            <td>{{ vote.name }}</td>
+            <td> {{ vote.viceName }}</td>
+            <td> {{ vote.votes }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="page == 'Candidatos'">
+    <div class="col-md-3">
+      <label for="candidato">Candidato</label>
+      <div class="input-group flex-nowrap">
+        <input id="candidato" [(ngModel)]="nomeCandidato" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="addon-wrapping">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <label for="cice">Vice</label>
+      <div class="input-group flex-nowrap">
+        <input id="vice" [(ngModel)]="viceNome" type="text" class="form-control" placeholder="Vice" aria-label="Vice" aria-describedby="addon-wrapping">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <label for="legenda">Legenda</label>
+      <div class="input-group flex-nowrap">
+        <input id="legenda" [(ngModel)]="legenda" type="text" maxlength="2" class="form-control" placeholder="legenda" aria-label="legenda" aria-describedby="addon-wrapping">
+      </div>
+    </div>
+    <div class="col-md-3" style="display: flex; align-items: flex-end;">
+      <button type="button" class="btn btn-primary" (click)="criarCandidato()">Salvar</button>
+    </div>
+    <div class="col-md-12">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Legenda</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Vice</th>
+            <th scope="col">Ações</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of candidatos">
+            <th>{{ c.subtitle }}</th>
+            <td>{{ c.name }}</td>
+            <td> {{ c.viceName }}</td>
+            <td><button type="button" class="btn btn-danger" (click)="deletarCandidato(c.candidateId)">Deletar</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
